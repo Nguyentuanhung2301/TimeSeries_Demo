@@ -1,5 +1,0 @@
-streamlit
-xgboost
-torch
-numpy
-scikit-learn
