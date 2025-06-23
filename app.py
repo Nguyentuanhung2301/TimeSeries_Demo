@@ -85,7 +85,7 @@ if st.button("Dự báo"):
         pred = model.predict(input_data)[0]
         st.success(f"🔮 Dự đoán XGBoost: {'Churn' if pred == 1 else 'Không Churn'}")
 
-    else model_type == "LSTM":
+    else: model_type == "LSTM":
         model = load_lstm_model()
         model.eval()
         with torch.no_grad():
