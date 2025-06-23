@@ -86,9 +86,9 @@ if st.button("Dự báo"):
         st.success(f"🔮 Dự đoán XGBoost: {'Churn' if pred == 1 else 'Không Churn'}")
 
     else: model_type == "LSTM"
-        model = load_lstm_model()
-        model.eval()
-        with torch.no_grad():
+          model = load_lstm_model()
+          model.eval()
+          with torch.no_grad():
             tensor_input = torch.tensor(input_data, dtype=torch.float32).unsqueeze(0)
             output = model(tensor_input)
             prob = torch.sigmoid(output).item()
