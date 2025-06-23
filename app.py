@@ -67,33 +67,31 @@ with tabs[0]:
 
 # Tab 2 - Dự báo thủ công
 with tabs[1]:
-    st.sidebar.header("📊 Dự báo thủ công")
-model_type = st.sidebar.radio("Chọn mô hình", ["XGBoost", "LSTM"])
+    st.subheader("🧪 Dự báo thủ công")
+    model_choice = st.radio("Chọn mô hình", ["XGBoost", "LSTM"])
+    st.subheader("🧪 Nhập dữ liệu đặc trưng")
 
-st.subheader("🧪 Nhập dữ liệu đặc trưng")
-
-event_count = st.number_input("event_count", min_value=0.0, step=1.0)
-total_spent = st.number_input("total_spent", min_value=0.0, step=1.0)
-purchase_count = st.number_input("purchase_count", min_value=0.0, step=1.0)
-n_categories = st.number_input("n_categories", min_value=0.0, step=1.0)
-
-if st.button("Dự báo"):
-    input_data = np.array([[event_count, total_spent, purchase_count, n_categories]])
-
-    if model_type == "XGBoost":
-        model = load_xgb_model()
-        pred = model.predict(input_data)[0]
-        st.success(f"🔮 Dự đoán XGBoost: {'Churn' if pred == 1 else 'Không Churn'}")
-
-    else: model_type == "LSTM"
-          model = load_lstm_model()
-          model.eval()
-          with torch.no_grad():
-            tensor_input = torch.tensor(input_data, dtype=torch.float32).unsqueeze(0)
-            output = model(tensor_input)
-            prob = torch.sigmoid(output).item()
-            st.success(f"🔮 Dự đoán LSTM: {'Churn' if prob > 0.5 else 'Không Churn'} (Xác suất: {prob:.2f})")
-
+    event_count = st.number_input("event_count", min_value=0.0, step=1.0)
+    total_spent = st.number_input("total_spent", min_value=0.0, step=1.0)
+    purchase_count = st.number_input("purchase_count", min_value=0.0, step=1.0)
+    n_categories = st.number_input("n_categories", min_value=0.0, step=1.0)
+    if st.button("Dự báo"):
+        try:
+            input_values = np.array([float(x.strip()) for x in raw_input.split(",")])
+            if len(input_values) != 4:
+                st.error("❌ Cần nhập đúng 4 giá trị đặc trưng.")
+            else:
+                if model_choice == "XGBoost":
+                    model = load_xgb_model()
+                    pred = model.predict(input_values.reshape(1, -1))[0]
+                else:
+                    model = load_lstm_model()
+                    input_tensor = torch.tensor(input_values.reshape(1, 1, -1), dtype=torch.float32)
+                    with torch.no_grad():
+                        pred = (torch.sigmoid(model(input_tensor)).numpy() > 0.5).astype(int).item()
+                st.success(f"✅ Dự đoán: {'Churn' if pred == 1 else 'Không Churn'}")
+        except Exception as e:
+            st.error(f"❌ Lỗi: {e}")
 # Tab 3 - Giới thiệu mô hình
 with tabs[2]:
     st.markdown("""
